@@ -42,7 +42,7 @@ def ode(
     solver = _solver(**solver_sett)
 
     if (stepsize := sett.stepsize_controller) is not None:
-        _stepsize_controller = getattr(optx, list(stepsize.keys())[0])
+        _stepsize_controller = getattr(diffrax, list(stepsize.keys())[0])
         stepsize_controller = _stepsize_controller(**list(stepsize.values())[0])
         diffeqsolve_sett["stepsize_controller"] = stepsize_controller
 
