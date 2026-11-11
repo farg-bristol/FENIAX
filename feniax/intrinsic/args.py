@@ -359,6 +359,49 @@ def arg_20g121(
         component_nodes,
         component_father,
     )
+    
+def arg_20G121(
+    sol: solution.IntrinsicSolution,
+    system: intrinsicmodal.Dsystem,
+    fem: intrinsicmodal.Dfem,
+    *args,
+    **kwargs,
+):
+    pointforces = getattr(sol.data, f"pointforces_{system.name}")
+    eta_0 = kwargs["eta_0"]
+    phi1l = sol.data.modes.phi1l
+    psi2l = sol.data.modes.psi2l
+    gamma1 = sol.data.couplings.gamma1
+    gamma2 = sol.data.couplings.gamma2
+    omega = sol.data.modes.omega
+    x = pointforces.x
+    states = system.states
+    force_dead = pointforces.force_dead
+    force_gravity = pointforces.force_gravity
+    X_xdelta = sol.data.modes.X_xdelta
+    C0ab = sol.data.modes.C0ab
+    num_nodes = fem.num_nodes
+    component_nodes = fem.component_nodes_int
+    component_names = fem.component_names_int
+    component_father = fem.component_father_int
+    return (
+        eta_0,
+        gamma1,
+        gamma2,
+        omega,
+        phi1l,
+        psi2l,
+        x,
+        force_dead,
+        force_gravity,
+        states,
+        X_xdelta,
+        C0ab,
+        component_names,
+        num_nodes,
+        component_nodes,
+        component_father,
+    )    
 
 @catter2library
 def arg_20g2(

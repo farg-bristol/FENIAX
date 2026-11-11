@@ -83,6 +83,55 @@ def dq_20g121(t, q, *args):
 
     F = _dq_20g121(t, q1i, q2i)
     return F
+    
+def dq_20G121(t, q, *args):
+    """Clamped structural dynamic dead point forces and gravity."""
+
+    (
+        eta_0,
+        gamma1,
+        gamma2,
+        omega,
+        phi1l,
+        psi2l,
+        x,
+        force_dead,
+        force_gravity,
+        states,
+        X_xdelta,
+        C0ab,
+        component_names,
+        num_nodes,
+        component_nodes,
+        component_father,
+    ) = args[0]
+
+    q1i = q[states["q1"]]
+    q2i = q[states["q2"]]
+
+    # @jax.jit
+    def _dq_20G121(t, q1, q2):
+        X3t = postprocess.compute_strains_t(psi2l, q2)
+        Rab = postprocess.integrate_strainsCab(
+            jnp.eye(3),
+            X3t,
+            X_xdelta,
+            C0ab,
+            component_names,
+            num_nodes,
+            component_nodes,
+            component_father,
+        )
+        eta = xloads.eta_pointdead(t, phi1l, x, force_dead, Rab)
+        eta_gravity = xloads.eta_pointdead_const(phi1l, force_gravity[-1], Rab)
+        F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
+        F1 += eta + eta_gravity
+        F1 += eta_0
+        F = jnp.hstack([F1, F2])
+        return F
+
+    F = _dq_20G121(t, q1i, q2i)
+    return F    
 
 def dq_20g2(t, q, *args):
     """Free structural dynamic no external forces."""
